@@ -13,36 +13,43 @@ jobs:
         run: |
           curl -X POST -H 'Content-type: application/json' \
             --data '{
-              "text": "Un nuevo PR ha sido creado por: *${{ github.actor }}* :rocket:",
-              "attachments": [
+              "blocks": [
                 {
-                  "color": "#36a64f",
-                  "title": "Pull Request URL",
-                  "title_link": "${{ github.event.pull_request.html_url }}",
-                  "fields": [
-                    {
-                      "title": "Título",
-                      "value": "${{ github.event.pull_request.title }}",
-                      "short": true
-                    },
-                    {
-                      "title": "Desarrollador:",
-                      "value": "${{ github.actor }}",
-                      "short": true
-                    }
-                  ],
-                  "fields": [
-                    {
-                      "title": "Pull Request URL:",
-                      "value": "${{ github.event.pull_request.html_url }}",
-                      "short": true
-                    },
-                    {
-                      "title": "Commit:",
-                      "value": "${{ github.actor }}",
-                      "short": true
-                    }
-                  ]
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "GitHub PR Notifications"
+                  }
+                },
+                "type": "section",
+                "fields" : [
+                 {
+                 "type": "mrkdwn",
+                 "text": "*User:*\n${{ github.actor }}"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Event:*\nPull Request"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Ref:*\n${{ github.ref }}"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Branch:*\n${{ github.head_ref }}"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Repository:*\n${{ github.repository }}"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Commit:*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.head.sha }}>"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*PR URL:*\n<${{ github.event.pull_request.html_url }}>"
                 }
               ]
             }' \
