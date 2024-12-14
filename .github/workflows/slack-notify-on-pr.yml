@@ -20,7 +20,7 @@ jobs:
                 "type": "header",
                 "text": {
                   "type": "plain_text",
-                  "text": "GitHub Notifications :octocat:"
+                  "text": "GitHub Notifications :rocket:"
                 }
               },
               {
@@ -28,31 +28,41 @@ jobs:
                 "fields": [
                   {
                     "type": "mrkdwn",
-                    "text": "*User:*\n${{ github.actor }}"
+                    "text": "*User:*\n${{ github.actor }}\n"
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*Event:*\nPull Request"
+                    "text": "*Event:*\nPull Request\n"
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*Ref:*\n${{ github.ref }}"
+                    "text": "*Ref:*\n${{ github.ref }}\n"
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*Branch:*\n${{ github.head_ref }}"
+                    "text": "*Branch:*\n${{ github.head_ref }}\n"
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*Repository:*\n${{ github.repository }}"
+                    "text": "*Repository:*\n${{ github.repository }}\n"
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "*Commit:*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.head.sha }}>"
-                  },
+                    "text": "*Commit:*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.head.sha }}>\n"
+                  }
+                ]
+              },
+              {
+                "type": "actions",
+                "elements": [
                   {
-                    "type": "mrkdwn",
-                    "text": "*PR URL:*\n<${{ github.event.pull_request.html_url }}>"
+                    "type": "button",
+                    "text": {
+                      "type": "plain_text",
+                      "text": "Ver Pull Request"
+                    },
+                    "url": ${{ github.event.pull_request.html_url }},
+                    "style": "primary"
                   }
                 ]
               },
@@ -68,7 +78,7 @@ jobs:
                 "elements": [
                   {
                     "type": "mrkdwn",
-                    "text": "Triggered on this workflow run | Powered by GitHub Actions"
+                    "text": "Triggered on this workflow run | Innovación Gascaribe"
                   }
                 ]
               }
