@@ -12,11 +12,11 @@ jobs:
       - name: Send Slack notification
         uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         with:
           payload: |
             {
-              "text": "A new Pull Request has been created by *${{ github.actor }}* :rocket:",
+              "text": "A new Pull Request has been created by *${{ github.actor }}* :rocket: \n*Title*: ${{ github.event.pull_request.title }} \n*URL*: <${{ github.event.pull_request.html_url }}>",
               "blocks": [
                 {
                   "type": "section",
@@ -29,7 +29,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Title*: <${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}> \n *Author*: ${{ github.actor }}"
+                    "text": "*Title*: <${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}> \n*URL*: <${{ github.event.pull_request.html_url }}> \n*Author*: ${{ github.actor }}"
                   }
                 }
               ]
