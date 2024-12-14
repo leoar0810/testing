@@ -12,23 +12,57 @@ jobs:
       - name: Send Slack Notification with curl
         run: |
           curl -X POST -H 'Content-type: application/json' \
-            --data '{
-              "text": "A new Pull Request has been created by *${{ github.actor }}* :rocket:",
-              "attachments": [
+            --data '           {
+              "blocks": [
                 {
-                  "color": "#36a64f",
-                  "title": "Pull Request Details",
-                  "title_link": "${{ github.event.pull_request.html_url }}",
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "GitHub Notifications :octocat:"
+                  }
+                },
+                {
+                  "type": "section",
                   "fields": [
                     {
-                      "title": "Title",
-                      "value": "${{ github.event.pull_request.title }}",
-                      "short": true
+                      "type": "mrkdwn",
+                      "text": "*User:*\n${{ github.actor }}"
                     },
                     {
-                      "title": "Author",
-                      "value": "${{ github.actor }}",
-                      "short": true
+                      "type": "mrkdwn",
+                      "text": "*Event:*\nPull Request"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Ref:*\n${{ github.ref }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Branch:*\n${{ github.head_ref }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Repository:*\n${{ github.repository }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Commit:*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.head.sha }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Notification from action run *#${{ github.run_number }}*, which ran against commit *${{ github.event.pull_request.head.sha }}* from branch *${{ github.head_ref }}* of repository *${{ github.repository }}*."
+                  }
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "Powered by rtCamp's GitHub Actions Library | Triggered on this workflow run"
                     }
                   ]
                 }
