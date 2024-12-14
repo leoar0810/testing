@@ -20,7 +20,7 @@ jobs:
                 "type": "header",
                 "text": {
                   "type": "plain_text",
-                  "text": "GitHub Notifications :rocket:"
+                  "text": "New PR Created :rocket:"
                 }
               },
               {
@@ -65,13 +65,6 @@ jobs:
                     "style": "primary"
                   }
                 ]
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "Notification from action run *#${{ github.run_number }}*, which ran against commit *${{ github.event.pull_request.head.sha }}* from branch *${{ github.head_ref }}* of repository *${{ github.repository }}*."
-                }
               },
               {
                 "type": "context",
