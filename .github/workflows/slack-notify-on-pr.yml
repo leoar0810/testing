@@ -1,0 +1,36 @@
+name: Notify Slack on Pull Request
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  notify-slack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Slack notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          payload: |
+            {
+              "text": "A new Pull Request has been created by *${{ github.actor }}* :rocket:",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":bell: *New Pull Request Created*"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Title*: <${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}> \n *Author*: ${{ github.actor }}"
+                  }
+                }
+              ]
+            }
