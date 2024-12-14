@@ -9,28 +9,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send Slack notification
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-        with:
-          payload: |
-            {
-              "text": "A new Pull Request has been created by *${{ github.actor }}* :rocket: \n*Title*: ${{ github.event.pull_request.title }} \n*URL*: <${{ github.event.pull_request.html_url }}>",
-              "blocks": [
+      - name: Send Slack Notification with curl
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{
+              "text": "A new Pull Request has been created by *${{ github.actor }}* :rocket:",
+              "attachments": [
                 {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": ":bell: *New Pull Request Created*"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Title*: <${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}> \n*URL*: <${{ github.event.pull_request.html_url }}> \n*Author*: ${{ github.actor }}"
-                  }
+                  "color": "#36a64f",
+                  "title": "Pull Request Details",
+                  "title_link": "${{ github.event.pull_request.html_url }}",
+                  "fields": [
+                    {
+                      "title": "Title",
+                      "value": "${{ github.event.pull_request.title }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Author",
+                      "value": "${{ github.actor }}",
+                      "short": true
+                    }
+                  ]
                 }
               ]
-            }
+            }' \
+            ${{ secrets.SLACK_WEBHOOK_URL }}
