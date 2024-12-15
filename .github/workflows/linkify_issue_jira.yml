@@ -2,7 +2,7 @@ name: Linkify BID references in PR description
 
 on:
   pull_request:
-    types: [opened, edited]
+    types: [opened]
 
 jobs:
   linkify-description:
@@ -13,12 +13,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Obtener la descripción del PR
+          # Obtener el número y cuerpo del PR
           PR_NUMBER=${{ github.event.pull_request.number }}
           PR_BODY="${{ github.event.pull_request.body }}"
 
-          # Expresión regular para buscar BID-nnn
-          UPDATED_BODY=$(echo "$PR_BODY" | sed -E 's/(BID-[0-9]+)/[&](http:\/\/www.jira\/\1)/g')
+          # Patrón para encontrar [BID-nnn] y eliminar corchetes
+          PATTERN="\[BID-[0-9]+\]"
+
+          # Transformar [BID-nnn] en enlaces Markdown sin corchetes
+          UPDATED_BODY=$(echo "$PR_BODY" | sed -E "s|\[BID-([0-9]+)\]|BID-\1(http://www.jira/BID-\1)|g")
 
           # Actualizar la descripción del PR si hay cambios
           if [ "$UPDATED_BODY" != "$PR_BODY" ]; then
