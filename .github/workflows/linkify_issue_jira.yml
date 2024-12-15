@@ -21,7 +21,7 @@ jobs:
           PATTERN="\[BID-[0-9]+\]"
 
           # Transformar [BID-nnn] en enlaces Markdown sin corchetes
-          UPDATED_BODY=$(echo "$PR_BODY" | sed -E "s|\[BID-([0-9]+)\]|BID-\1(http://www.jira/BID-\1)|g")
+          UPDATED_BODY=$(echo "$PR_BODY" | sed -E "s|\[BID-([0-9]+)\]|[BID-\1](http://www.jira/BID-\1)|g")
 
           # Actualizar la descripción del PR si hay cambios
           if [ "$UPDATED_BODY" != "$PR_BODY" ]; then
