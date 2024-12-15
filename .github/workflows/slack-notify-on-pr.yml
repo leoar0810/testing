@@ -7,21 +7,31 @@ on:
 
 jobs:
   conditional-job:
-    if: contains(github.event.pull_request.labels.*.name, 'run-workflow') # Verifica si la etiqueta existe
+    if: ${{ contains(join(fromJson(github.event.pull_request.labels | toJSON).name, ','), 'run-workflow') }}
     runs-on: ubuntu-latest
     steps:
-      - name: Setting env 
+      - name: Setting env
         id: set-env
         run: |
-          if [[ "${{ github.event.pull_request.labels.*.name }}" == *"run-workflow"* ]]; then
-            echo "SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK_URL }}" >> $GITHUB_ENV
-          elif [[ "${{ github.event.pull_request.labels.*.name }}" == *"run-something-else"* ]]; then
-            echo "SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK_URL }}" >> $GITHUB_ENV
+          labels=$(jq -r '.pull_request.labels[].name' <<< "${{ toJSON(github.event) }}")
+          if [[ "$labels" == *"run-workflow"* ]]; then
+              echo "SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK_URL }}" >> $GITHUB_ENV
+          elif [[ "$labels" == *"run-something-else"* ]]; then
+              echo "SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK_URL }}" >> $GITHUB_ENV
+          else
+              echo "Error: Ninguna etiqueta coincide. SLACK_WEBHOOK no será configurado."
+              exit 1
           fi
       - name: Send Slack Notification with curl
         run: |
+          if [[ -z "$SLACK_WEBHOOK" ]]; then
+              echo "Error: SLACK_WEBHOOK no está configurado."
+              exit 1
+          fi
+
           curl -X POST -H 'Content-type: application/json' \
-          --data '{
+          --data "$(cat <<EOF
+          {
             "blocks": [
               {
                 "type": "header",
@@ -83,5 +93,7 @@ jobs:
                 ]
               }
             ]
-          }' \
+          }
+          EOF
+          )" \
           $SLACK_WEBHOOK
