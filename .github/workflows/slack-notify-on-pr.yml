@@ -59,7 +59,7 @@ jobs:
                     "type": "button",
                     "text": {
                       "type": "plain_text",
-                      "text": "Ver Pull Request"
+                      "text": "See Pull Request"
                     },
                     "url": "${{ github.event.pull_request.html_url }}",
                     "style": "primary"
@@ -71,7 +71,7 @@ jobs:
                 "elements": [
                   {
                     "type": "mrkdwn",
-                    "text": "Triggered on this workflow run | Innovación Gascaribe"
+                    "text": "Powered by Innovación Gascaribe"
                   }
                 ]
               }
