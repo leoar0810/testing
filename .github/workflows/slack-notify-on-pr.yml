@@ -7,7 +7,7 @@ on:
 
 jobs:
   conditional-job:
-    if: contains(github.event.pull_request.labels.*.name, 'run-workflow') # Verifica si la etiqueta existe
+    if: contains(github.event.pull_request.labels.*.name, 'run-workflow')
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack Notification with curl

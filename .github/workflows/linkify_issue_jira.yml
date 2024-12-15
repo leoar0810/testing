@@ -18,7 +18,7 @@ jobs:
           PR_BODY="${{ github.event.pull_request.body }}"
 
           # Patrón para encontrar [BID-nnn] y eliminar corchetes
-          PATTERN="\[BID-[0-9]+\]"
+          PATTERN="BID-[0-9]+"
 
           # Transformar [BID-nnn] en enlaces Markdown sin corchetes
           UPDATED_BODY=$(echo "$PR_BODY" | sed -E "s|\[BID-([0-9]+)\]|[BID-\1](http://www.jira/BID-\1)|g")
