@@ -36,7 +36,7 @@ jobs:
                   },
                   {
                     "type": "mrkdwn",
-                    "text": "Title::*\n${{ github.event.pull_request.title }}\n"
+                    "text": "*Title:*\n${{ github.event.pull_request.title }}\n"
                   },
                   {
                     "type": "mrkdwn",
