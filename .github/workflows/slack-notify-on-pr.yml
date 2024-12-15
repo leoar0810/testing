@@ -13,9 +13,9 @@ jobs:
       - name: Setting env 
         id: set-env
         run: |
-          if [[ "Array" == *"run-workflow"* ]]; then
+          if [[ "${{ github.event.pull_request.labels.*.name }}" == *"run-workflow"* ]]; then
             echo "SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK_URL }}" >> $GITHUB_ENV
-          elif [[ "Array" == *"run-something-else"* ]]; then
+          elif [[ "${{ github.event.pull_request.labels.*.name }}" == *"run-something-else"* ]]; then
             echo "SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK_URL }}" >> $GITHUB_ENV
           fi
       - name: Send Slack Notification with curl
