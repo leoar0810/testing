@@ -1,0 +1,30 @@
+name: Linkify BID references in PR description
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+jobs:
+  linkify-description:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Linkify BID references in PR description
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Obtener la descripción del PR
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          PR_BODY="${{ github.event.pull_request.body }}"
+
+          # Expresión regular para buscar BID-nnn
+          UPDATED_BODY=$(echo "$PR_BODY" | sed -E 's/(BID-[0-9]+)/[&](http:\/\/www.jira\/\1)/g')
+
+          # Actualizar la descripción del PR si hay cambios
+          if [ "$UPDATED_BODY" != "$PR_BODY" ]; then
+            curl -s -X PATCH \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "{\"body\": \"$UPDATED_BODY\"}" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER"
+          fi
