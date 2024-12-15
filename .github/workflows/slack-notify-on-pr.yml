@@ -2,12 +2,13 @@ name: Notify Slack on Pull Request
 
 on:
   pull_request:
-    types: [opened]
+    types:
+      - labeled
 
 jobs:
-  notify-slack:
+  conditional-job:
+    if: contains(github.event.pull_request.labels.*.name, 'run-workflow') # Verifica si la etiqueta existe
     runs-on: ubuntu-latest
-
     steps:
       - name: Send Slack Notification with curl
         env:
