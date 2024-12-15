@@ -22,70 +22,58 @@ jobs:
             echo "Error: Ninguna etiqueta coincide. SLACK_WEBHOOK no será configurado."
             exit 1
           fi
-      - name: Send Slack Notification with curl
+              - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Get all PR labels
+        id: get-labels
         run: |
-          curl -X POST -H 'Content-type: application/json' \
-          --data '{
-            "blocks": [
-              {
-                "type": "header",git
-                "text": {
-                  "type": "plain_text",
-                  "text": "New PR Created :rocket:"
-                }
-              },
-              {
-                "type": "section",
-                "fields": [
-                  {
-                    "type": "mrkdwn",
-                    "text": "*User:*\n${{ github.actor }}\n"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Event:*\nPull Request\n"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Title:*\n${{ github.event.pull_request.title }}\n"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Branch:*\n${{ github.head_ref }}\n"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Repository:*\n${{ github.repository }}\n"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Commit:*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.head.sha }}>\n"
-                  }
-                ]
-              },
-              {
-                "type": "actions",
-                "elements": [
-                  {
-                    "type": "button",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "See Pull Request"
-                    },
-                    "url": "${{ github.event.pull_request.html_url }}",
-                    "style": "primary"
-                  }
-                ]
-              },
-              {
-                "type": "context",
-                "elements": [
-                  {
-                    "type": "mrkdwn",
-                    "text": "Powered by Innovación Gascaribe"
-                  }
-                ]
-              }
-            ]
-          }' \
-          $SLACK_WEBHOOK
+          # Usa la API de GitHub para obtener todas las etiquetas del PR
+          PR_NUMBER=$(echo "${{ github.event.pull_request.number }}")
+          REPO=${{ github.repository }}
+          LABELS=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/$REPO/issues/$PR_NUMBER/labels" | jq -r '.[].name')
+          
+          echo "PR_LABELS=$LABELS" >> $GITHUB_ENV
+          echo "Labels: $LABELS"
+
+      - name: Set environment variables based on labels
+        id: set-env
+        run: |
+          DEPLOY_ENV="development" # Valor por defecto
+          for label in $PR_LABELS; do
+            if [[ "$label" == "run-workflow" ]]; then
+              SLACK_WEBHOOK="production"
+            elif [[ "$label" == "run-workflow" ]]; then
+              SLACK_WEBHOOK="staging"
+            fi
+          done
+
+          echo "DEPLOY_ENV=$DEPLOY_ENV" >> $GITHUB_ENV
+
+
+
+      - name: Get PR labels
+        id: get_labels
+        run: |
+          PR_LABELS="${{ github.event.pull_request.labels }}"
+          echo "PR Labels: $PR_LABELS"
+        
+      - name: Set environment variable based on labels
+        id: set_env_var
+        run: |
+          PR_LABELS="${{ github.event.pull_request.labels }}"
+          LABEL=0  # Default value if no labels match
+
+          # Check for label1 or label2
+          if [[ "$PR_LABELS" == *"run-workflow"* ]]; then
+            LABEL="${{ secrets.SLACK_WEBHOOK_URL }}"
+          elif [[ "$PR_LABELS" == *"run-workflow"* ]]; then
+            LABEL="${{ secrets.SLACK_WEBHOOK_URL }}"
+          fi
+
+          # Export the environment variable
+          echo "LABEL=$LABEL" >> $GITHUB_ENV
+
+      - name: Display environment variable
+        run: echo "The value of LABEL is ${{ env.LABEL }}"
