@@ -10,9 +10,14 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'run-workflow') # Verifica si la etiqueta existe
     runs-on: ubuntu-latest
     steps:
+      - name: Setting env 
+        id: set-env
+        run: |
+          if [[ "${{ github.event.pull_request.labels.*.name }}" == *"run-workflow"* ]]; then
+            echo "SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK_URL }}" >> $GITHUB_ENV
+          elif [[ "${{ github.event.pull_request.labels.*.name }}" == *"run-workflow"* ]]; then
+            echo "SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK_URL }}" >> $GITHUB_ENV
       - name: Send Slack Notification with curl
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           curl -X POST -H 'Content-type: application/json' \
           --data '{
