@@ -2,7 +2,7 @@ name: Linkify BID references in PR description
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened] # Incluye 'edited' para actualizaciones del PR
 
 jobs:
   linkify-description:
@@ -14,20 +14,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Obtener el número y cuerpo del PR
-          PR_NUMBER=${{ github.event.pull_request.number }}
+          PR_NUMBER="${{ github.event.pull_request.number }}"
           PR_BODY="${{ github.event.pull_request.body }}"
 
-          # Patrón para encontrar [BID-nnn] y eliminar corchetes
-          PATTERN="\BID-[0-9]+\"
+          # Patrón para encontrar BID-123
+          PATTERN="BID-([0-9]+)"
 
-          # Transformar [BID-nnn] en enlaces Markdown sin corchetes
-          UPDATED_BODY=$(echo "$PR_BODY" | sed -E "s|\[BID-([0-9]+)\]|[BID-\1](http://www.jira/BID-\1)|g")
+          # Transformar BID-123 en enlaces Markdown
+          UPDATED_BODY=$(echo "$PR_BODY" | sed -E "s|$PATTERN|[BID-\1](http://www.jira/BID-\1)|g")
 
-          # Actualizar la descripción del PR si hay cambios
+          # Verificar si el cuerpo del PR cambió
           if [ "$UPDATED_BODY" != "$PR_BODY" ]; then
+            # Reemplazar nuevas líneas por \\n para el formato JSON
+            UPDATED_BODY_ESCAPED=$(echo "$UPDATED_BODY" | sed ':a;N;$!ba;s/\n/\\n/g')
+
+            # Actualizar la descripción del PR usando la API de GitHub
             curl -s -X PATCH \
               -H "Authorization: Bearer $GITHUB_TOKEN" \
               -H "Content-Type: application/json" \
-              -d "{\"body\": \"$UPDATED_BODY\"}" \
+              -d "{\"body\": \"$UPDATED_BODY_ESCAPED\"}" \
               "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER"
           fi
