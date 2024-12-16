@@ -13,22 +13,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Obtener el número y cuerpo del PR
           PR_NUMBER="${{ github.event.pull_request.number }}"
           PR_BODY="${{ github.event.pull_request.body }}"
 
-          # Patrón para encontrar BID-123
           PATTERN="BID-([0-9]+)"
 
           # Transformar BID-123 en enlaces Markdown
           UPDATED_BODY=$(echo "$PR_BODY" | sed -E "s|$PATTERN|[BID-\1](http://www.jira/BID-\1)|g")
 
-          # Verificar si el cuerpo del PR cambió
           if [ "$UPDATED_BODY" != "$PR_BODY" ]; then
             # Reemplazar nuevas líneas por \\n para el formato JSON
             UPDATED_BODY_ESCAPED=$(echo "$UPDATED_BODY" | sed ':a;N;$!ba;s/\n/\\n/g')
 
-            # Actualizar la descripción del PR usando la API de GitHub
             curl -s -X PATCH \
               -H "Authorization: Bearer $GITHUB_TOKEN" \
               -H "Content-Type: application/json" \
